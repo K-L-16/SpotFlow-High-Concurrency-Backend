@@ -12,7 +12,6 @@ import com.kl.service.IUserService;
 import com.kl.utils.JwtUtils;
 import com.kl.utils.RegexUtils;
 import com.kl.utils.UserHolder;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -245,5 +244,12 @@ public class UserServiceImpl  implements IUserService {
     public User findById(Long id) {
         User user = userRepository.findById(id).orElse(null);
         return user;
+    }
+
+    @Override
+    public List<User> findAllById(Iterable<Long> ids) {
+        List<User> users = new ArrayList<>();
+        userRepository.findAllById(ids).forEach(users::add);
+        return users;
     }
 }

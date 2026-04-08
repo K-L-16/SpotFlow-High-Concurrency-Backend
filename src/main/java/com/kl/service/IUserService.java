@@ -6,6 +6,8 @@ import com.kl.entity.User;
 
 import jakarta.servlet.http.HttpSession;
 
+import java.util.List;
+
 public interface IUserService {
 
     Result sendCode(String phone);
@@ -19,4 +21,6 @@ public interface IUserService {
     Result logout(String token);
 
     User findById(Long id);
+
+    List<User> findAllById(Iterable<Long> ids);
 }
