@@ -40,8 +40,9 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
             // 1. 黑名单校验
             Boolean exists = stringRedisTemplate.hasKey("jwt:blacklist:" + token);
             if (Boolean.TRUE.equals(exists)) {
-                response.setStatus(401);
-                return false;
+                // 公开接口允许匿名访问，黑名单 token 按未登录处理
+                UserHolder.removeUser();
+                return true;
             }
 
             // 2. 解析 JWT
@@ -50,8 +51,8 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
             // 3. 查用户
             User user = userService.findById(userId);
             if (user == null) {
-                response.setStatus(401);
-                return false;
+                UserHolder.removeUser();
+                return true;
             }
 
             // 4. 转 UserDTO，保存到 ThreadLocal
@@ -60,8 +61,9 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
             UserHolder.saveUser(userDTO);
 
         } catch (Exception e) {
-            response.setStatus(401);
-            return false;
+            // token 过期或非法时，按匿名用户处理，避免影响公开接口联调
+            UserHolder.removeUser();
+            return true;
         }
         return true;
     }

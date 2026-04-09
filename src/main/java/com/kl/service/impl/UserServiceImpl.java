@@ -73,45 +73,30 @@ public class UserServiceImpl  implements IUserService {
      */
     @Override
     public Result login(LoginFormDTO loginForm) {
-        //1. 校验手机号
-        if(RegexUtils.isPhoneInvalid(loginForm.getPhone())){
-            //如果不符合，返回错误信息
+        // 1. 校验手机号
+        if (RegexUtils.isPhoneInvalid(loginForm.getPhone())) {
             return Result.fail("手机号格式无效");
         }
-        //2. 从redis校验验证码
+
+        // 2. 从 Redis 校验验证码
         String cacheCode = stringRedisTemplate.opsForValue().get(LOGIN_CODE_KEY + loginForm.getPhone());
         String code = loginForm.getCode();
-        if(cacheCode == null || !cacheCode.equals(code)){
-            //3.不一致，报错，
+        if (cacheCode == null || !cacheCode.equals(code)) {
             return Result.fail("验证码错误");
         }
-        //4.一致，根据手机号查询用户 select * from tb_user where phone = ?
-        //调用jpa查询用户
+
+        // 3. 根据手机号查询用户
         User user = userRepository.findByPhone(loginForm.getPhone()).orElse(null);
 
-        //5.判断用户是否存在
-        if (user == null){
-            //6.不存在，创建新用户并保存
+        // 4. 用户不存在则创建
+        if (user == null) {
             user = createUserWithPhone(loginForm.getPhone());
         }
 
-        //7.存在，保存用户信息到redis中
-        //7.1 生成随机token，作为登录令牌
-        String token = UUID.randomUUID().toString();
-        //7.2 将user对象转为hashmap存储
-        UserDTO userDTO = new UserDTO();
-        BeanUtils.copyProperties(user, userDTO);
-        Map<String, Object> map = objectMapper.convertValue(userDTO, Map.class);
-        //由于存储的key和field和value都是string，所以要继续转成 string
-        Map<String, String> stringMap = new HashMap<>();
-        map.forEach((k, v) -> {
-            stringMap.put(k, v.toString());
-        });
-        //7.3 存储
-        stringRedisTemplate.opsForHash().putAll(LOGIN_USER_KEY +token, stringMap);
-        //7.4 设置token有效期 30mins
-        stringRedisTemplate.expire(LOGIN_USER_KEY +token, LOGIN_USER_TTL, TimeUnit.MINUTES);
-        //8.返回token
+        // 5. 生成 JWT
+        String token = JwtUtils.generateToken(user.getId());
+
+        // 6. 返回 JWT
         return Result.ok(token);
     }
 
