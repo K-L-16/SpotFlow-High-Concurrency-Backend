@@ -18,4 +18,9 @@ public class SeckillVoucherServiceImpl implements ISeckillVoucherService {
     public void save(SeckillVoucher seckillVoucher) {
         seckillVoucherRepository.save(seckillVoucher);
     }
+
+    @Override
+    public int deductStock(Long voucherId) {
+        return seckillVoucherRepository.deductStock(voucherId);
+    }
 }

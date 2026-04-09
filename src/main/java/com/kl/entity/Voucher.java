@@ -34,9 +34,11 @@ public class Voucher {
     @Column(name = "actual_value")
     private Long actualValue;
 
-    private Integer type;
+//    private Integer type;
+    private Byte type;
 
-    private Integer status;
+//    private Integer status;
+    private Byte status;
 
     @Transient
     private Integer stock;
@@ -52,4 +54,15 @@ public class Voucher {
 
     @Column(name = "update_time")
     private LocalDateTime updateTime;
+
+    @PrePersist
+    public void prePersist() {
+        this.createTime = LocalDateTime.now();
+        this.updateTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updateTime = LocalDateTime.now();
+    }
 }

@@ -48,8 +48,8 @@ public class UserInfo implements Serializable {
     /**
      * 性别，0：男，1：女
      */
-    private Boolean gender;
-
+//    private Boolean gender;
+    private Byte gender;
     /**
      * 生日
      */
@@ -63,7 +63,8 @@ public class UserInfo implements Serializable {
     /**
      * 会员级别
      */
-    private Boolean level;
+//    private Boolean level;
+    private Byte level;
 
     /**
      * 创建时间

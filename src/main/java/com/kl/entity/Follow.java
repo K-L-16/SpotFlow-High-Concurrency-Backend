@@ -43,4 +43,10 @@ public class Follow implements Serializable {
      */
     @Column(name = "create_time")
     private LocalDateTime createTime;
+
+    @PrePersist
+    public void prePersist() {
+        this.createTime = LocalDateTime.now();
+    }
+
 }

@@ -6,4 +6,6 @@ import com.kl.entity.SeckillVoucher;
 public interface ISeckillVoucherService {
 
     void save(SeckillVoucher seckillVoucher);
+
+    int deductStock(Long voucherId);
 }

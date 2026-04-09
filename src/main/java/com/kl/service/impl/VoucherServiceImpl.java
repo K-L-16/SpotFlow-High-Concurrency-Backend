@@ -45,8 +45,8 @@ public class VoucherServiceImpl implements IVoucherService {
             voucher.setRules((String) row[4]);
             voucher.setPayValue(row[5] == null ? null : ((Number) row[5]).longValue());
             voucher.setActualValue(row[6] == null ? null : ((Number) row[6]).longValue());
-            voucher.setType(row[7] == null ? null : ((Number) row[7]).intValue());
-            voucher.setStatus(row[8] == null ? null : ((Number) row[8]).intValue());
+            voucher.setType(row[7] == null ? null : ((Number) row[7]).byteValue());
+            voucher.setStatus(row[8] == null ? null : ((Number) row[8]).byteValue());
             voucher.setCreateTime((LocalDateTime) row[9]);
             voucher.setUpdateTime((LocalDateTime) row[10]);
             voucher.setStock(row[11] == null ? null : ((Number) row[11]).intValue());

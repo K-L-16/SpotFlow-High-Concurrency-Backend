@@ -55,4 +55,15 @@ public class ShopType implements Serializable {
     @JsonIgnore
     @Column(name = "update_time")
     private LocalDateTime updateTime;
+
+    @PrePersist
+    public void prePersist() {
+        this.createTime = LocalDateTime.now();
+        this.updateTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updateTime = LocalDateTime.now();
+    }
 }

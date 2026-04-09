@@ -24,9 +24,11 @@ public class VoucherOrder {
     private Long voucherId;
 
     @Column(name = "pay_type")
-    private Integer payType;
+//    private Integer payType;
+    private Byte payType;
 
-    private Integer status;
+//    private Integer status;
+    private Byte status;
 
     @Column(name = "create_time")
     private LocalDateTime createTime;
@@ -42,4 +44,14 @@ public class VoucherOrder {
 
     @Column(name = "update_time")
     private LocalDateTime updateTime;
+    @PrePersist
+    public void prePersist() {
+        this.createTime = LocalDateTime.now();
+        this.updateTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updateTime = LocalDateTime.now();
+    }
 }
