@@ -2,9 +2,6 @@ package com.kl.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @author 虎哥
- */
 public class RegexUtils {
     /**
      * 是否是无效手机格式

@@ -19,14 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * <p>
- *  服务实现类
- * </p>
- *
- * @author 虎哥
- * @since 2021-12-22
- */
+
 @Service
 public class FollowServiceImpl implements IFollowService {
 
@@ -96,7 +89,6 @@ public class FollowServiceImpl implements IFollowService {
         }
         List<Long> ids = intersect.stream().map(Long::valueOf).collect(Collectors.toList());
         //4.查询用户
-        //todo这里用mybatis
         List<UserDTO> userDTOs = userService.findAllById(ids)
                 .stream()
                 .map(user -> {
