@@ -3,6 +3,7 @@ package com.kl.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Entity
 @Table(name = "tb_blog_comments")
+@NoArgsConstructor
 public class BlogComments implements Serializable {
 
     private static final long serialVersionUID = 1L;
