@@ -5,6 +5,8 @@ import com.kl.dto.Result;
 import com.kl.entity.Shop;
 import com.kl.service.IShopService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/shop")
+@Tag(name = "Shop api")
 public class ShopController {
 
     @Autowired
@@ -23,6 +26,7 @@ public class ShopController {
      * @param id 商铺id
      * @return 商铺详情数据
      */
+    @Operation(summary = "query shop by id")
     @GetMapping("/{id}")
     public Result queryShopById(@PathVariable("id") Long id) {
         return shopService.queryById(id);
@@ -33,6 +37,7 @@ public class ShopController {
      * @param shop 商铺数据
      * @return 商铺id
      */
+    @Operation(summary = "save shop")
     @PostMapping
     public Result saveShop(@RequestBody Shop shop) {
         // 写入数据库
@@ -46,6 +51,7 @@ public class ShopController {
      * @param shop 商铺数据
      * @return 无
      */
+    @Operation(summary = "update shop")
     @PutMapping
     public Result updateShop(@RequestBody Shop shop) {
         // 写入数据库
@@ -58,6 +64,7 @@ public class ShopController {
      * @param current 页码
      * @return 商铺列表
      */
+    @Operation(summary = "query shop by type")
     @GetMapping("/of/type")
     public Result queryShopByType(
             @RequestParam("typeId") Long typeId,
@@ -74,6 +81,7 @@ public class ShopController {
      * @param current 页码
      * @return 商铺列表
      */
+    @Operation(summary = "query shop by name")
     @GetMapping("/of/name")
     public Result queryShopByName(
             @RequestParam(value = "name", required = false) String name,

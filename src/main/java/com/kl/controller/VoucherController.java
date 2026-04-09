@@ -5,12 +5,15 @@ package com.kl.controller;
 import com.kl.dto.Result;
 import com.kl.entity.Voucher;
 import com.kl.service.IVoucherService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 @RequestMapping("/voucher")
+@Tag(name = "voucher api")
 public class VoucherController {
 
     @Autowired
@@ -21,6 +24,7 @@ public class VoucherController {
      * @param voucher 优惠券信息
      * @return 优惠券id
      */
+    @Operation(summary = "add voucher")
     @PostMapping
     public Result addVoucher(@RequestBody Voucher voucher) {
         voucherService.addVoucher(voucher);
@@ -32,6 +36,7 @@ public class VoucherController {
      * @param voucher 优惠券信息，包含秒杀信息
      * @return 优惠券id
      */
+    @Operation(summary = "add seckill voucher")
     @PostMapping("seckill")
     public Result addSeckillVoucher(@RequestBody Voucher voucher) {
         voucherService.addSeckillVoucher(voucher);
@@ -44,6 +49,7 @@ public class VoucherController {
      * @return 优惠券列表
      */
     @GetMapping("/list/{shopId}")
+    @Operation(summary = "query voucher of current shop")
     public Result queryVoucherOfShop(@PathVariable("shopId") Long shopId) {
        return voucherService.queryVoucherOfShop(shopId);
     }

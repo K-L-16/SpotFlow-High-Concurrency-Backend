@@ -3,6 +3,8 @@ package com.kl.controller;
 
 import com.kl.dto.Result;
 import com.kl.utils.SystemConstants;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,9 +16,11 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("upload")
+@Tag(name = "Upload api",description = "Local upload")
 public class UploadController {
 
     @PostMapping("blog")
+    @Operation( summary = "Upload blog image")
     public Result uploadImage(@RequestParam("file") MultipartFile image) {
         try {
             // 获取原始文件名称
@@ -34,6 +38,7 @@ public class UploadController {
     }
 
     @GetMapping("/blog/delete")
+    @Operation( summary = "Delete blog image")
     public Result deleteBlogImg(@RequestParam("name") String filename) {
         File file = new File(SystemConstants.IMAGE_UPLOAD_DIR, filename);
         if (file.isDirectory()) {

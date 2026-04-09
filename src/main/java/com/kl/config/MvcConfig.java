@@ -27,9 +27,21 @@ public class MvcConfig implements WebMvcConfigurer {
                         "/shop/**",
                         "/shop-type/**",
                         "/upload/**",
-                        "/voucher/**"
+                        "/voucher/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**",
+                        "/v3/api-docs",
+                        "/webjars/**"
                 ).order(1);
         registry.addInterceptor(jwtAuthenticationInterceptor)
-                .addPathPatterns("/**").order(0);
+                .addPathPatterns("/**").order(0)
+                .excludePathPatterns(
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**",
+                        "/v3/api-docs",
+                        "/webjars/**"
+                );
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -47,15 +48,28 @@ public class VoucherServiceImpl implements IVoucherService {
             voucher.setActualValue(row[6] == null ? null : ((Number) row[6]).longValue());
             voucher.setType(row[7] == null ? null : ((Number) row[7]).byteValue());
             voucher.setStatus(row[8] == null ? null : ((Number) row[8]).byteValue());
-            voucher.setCreateTime((LocalDateTime) row[9]);
-            voucher.setUpdateTime((LocalDateTime) row[10]);
+            voucher.setBeginTime(toLocalDateTime(row[12]));
+            voucher.setEndTime(toLocalDateTime(row[13]));
             voucher.setStock(row[11] == null ? null : ((Number) row[11]).intValue());
-            voucher.setBeginTime((LocalDateTime) row[12]);
-            voucher.setEndTime((LocalDateTime) row[13]);
+            voucher.setBeginTime(toLocalDateTime(row[12]));
+            voucher.setEndTime(toLocalDateTime(row[13]));
             return voucher;
         }).toList();
         // 返回结果
         return Result.ok(vouchers);
+    }
+
+    private LocalDateTime toLocalDateTime(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof LocalDateTime ldt) {
+            return ldt;
+        }
+        if (value instanceof Timestamp ts) {
+            return ts.toLocalDateTime();
+        }
+        throw new IllegalArgumentException("Unsupported datetime value type: " + value.getClass());
     }
 
     @Override

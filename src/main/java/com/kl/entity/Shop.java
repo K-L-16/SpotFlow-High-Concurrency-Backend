@@ -49,12 +49,12 @@ public class Shop implements Serializable {
     /**
      * 经度
      */
-    private Double x;
+    private Double x = 0.0;
 
     /**
      * 纬度
      */
-    private Double y;
+    private Double y = 0.0;
 
     /**
      * 均价

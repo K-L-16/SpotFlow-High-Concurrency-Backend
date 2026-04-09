@@ -25,10 +25,10 @@ public class VoucherOrder {
 
     @Column(name = "pay_type")
 //    private Integer payType;
-    private Byte payType;
+    private Byte payType = 1;
 
 //    private Integer status;
-    private Byte status;
+    private Byte status = 1;
 
     @Column(name = "create_time")
     private LocalDateTime createTime;

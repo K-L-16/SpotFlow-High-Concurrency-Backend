@@ -66,7 +66,6 @@ public class VoucherOrderServiceImpl  implements IVoucherOrderService {
             return Result.fail(r == 1 ? "库存不足" : "不能重复下单");
         }
         //2.2为0.有购买资格，把下单的信息保存到阻塞队列
-        //todo 保存阻塞队列
         long orderId = redisIDWorker.nextId("order");
         //2.3创建订单
         VoucherOrder voucherOrder = new VoucherOrder();
