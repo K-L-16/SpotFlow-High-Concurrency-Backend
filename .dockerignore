@@ -1,0 +1,11 @@
+target/
+*.log
+**/.idea
+**/.git
+**/.gitignore
+**/.mvn
+**/mvnw
+**/mvnw.cmd
+**/pom.xml
+**/src/test
+

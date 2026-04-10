@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: spotflow-ticketing-system:latest
+    container_name: spotflow-app
+    ports:
+      - "8080:8080"
+    environment:
+      # Spring / app runtime
+      - SERVER_PORT=8080
+      # Database access credentials (application-example.yml uses DB_USERNAME/DB_PASSWORD placeholders)
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      # Override Spring datasource URL so the app connects to the compose mysql service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/spotflow?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+      - SPRING_DATASOURCE_DRIVER-CLASS-NAME=com.mysql.cj.jdbc.Driver
+      # Redis (application-example.yml uses REDIS_HOST/REDIS_PORT/REDIS_PASSWORD placeholders)
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      # RabbitMQ (application-example.yml placeholders)
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_PORT=${RABBITMQ_PORT}
+      - RABBITMQ_USERNAME=${RABBITMQ_USERNAME}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+      - RABBITMQ_VHOST=${RABBITMQ_VHOST}
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: spotflow-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.0
+    container_name: spotflow-redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: spotflow-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: unless-stopped
+
