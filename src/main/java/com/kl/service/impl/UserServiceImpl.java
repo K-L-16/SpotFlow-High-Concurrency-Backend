@@ -7,6 +7,7 @@ import com.kl.dto.Result;
 import com.kl.dto.UserDTO;
 import com.kl.entity.User;
 
+import com.kl.properties.JwtProperties;
 import com.kl.repository.UserRepository;
 import com.kl.service.IUserService;
 import com.kl.utils.JwtUtils;
@@ -42,6 +43,9 @@ public class UserServiceImpl  implements IUserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtProperties jwtProperties;
 
     /**
      * 发送手机验证码（并未实现真实发送手机验证码，而是在本地console模拟）
@@ -94,7 +98,7 @@ public class UserServiceImpl  implements IUserService {
         }
 
         // 5. 生成 JWT
-        String token = JwtUtils.generateToken(user.getId());
+        String token = JwtUtils.generateToken(user.getId(), jwtProperties.getSecret(), jwtProperties.getExpirationMillis());
 
         // 6. 返回 JWT
         return Result.ok(token);
@@ -200,7 +204,7 @@ public class UserServiceImpl  implements IUserService {
         String token = authHeader;
 
         try {
-            Date expiration = JwtUtils.getExpiration(token);
+            Date expiration = JwtUtils.getExpiration(token, jwtProperties.getSecret());
             //检查jwt是否过期
             long ttl = expiration.getTime() - System.currentTimeMillis();
             //设置jwt过期黑名单

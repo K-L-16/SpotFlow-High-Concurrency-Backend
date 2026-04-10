@@ -10,16 +10,12 @@ import java.util.Date;
 
 public class JwtUtils {
 
-    // 至少 32 字节，HS256/HS384/HS512 都要求足够强的 key
-    private static final String SECRET = "qwertyuioasdfghjkzxcghmfheiawofaohfwa";
-    private static final long EXPIRE_MILLIS = 1000L * 60 * 60 * 24 * 3; // 3天
 
-    private static final SecretKey KEY =
-            Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 
-    public static String generateToken(Long userId) {
+    public static String generateToken(Long userId, String secret, long expireMillis) {
         Date now = new Date();
-        Date expire = new Date(now.getTime() + EXPIRE_MILLIS);
+        Date expire = new Date(now.getTime() + expireMillis);
+        SecretKey KEY = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 
         return Jwts.builder()
                 .subject("login")
@@ -30,7 +26,8 @@ public class JwtUtils {
                 .compact();
     }
 
-    public static Claims parseToken(String token) {
+    public static Claims parseToken(String token, String secret) {
+        SecretKey KEY = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         return Jwts.parser()
                 .verifyWith(KEY)
                 .build()
@@ -38,8 +35,8 @@ public class JwtUtils {
                 .getPayload();
     }
 
-    public static Long getUserId(String token) {
-        Claims claims = parseToken(token);
+    public static Long getUserId(String token, String secret) {
+        Claims claims = parseToken(token, secret);
         Object userId = claims.get("userId");
         if (userId instanceof Integer) {
             return ((Integer) userId).longValue();
@@ -50,7 +47,7 @@ public class JwtUtils {
         return Long.valueOf(String.valueOf(userId));
     }
 
-    public static Date getExpiration(String token) {
-        return parseToken(token).getExpiration();
+    public static Date getExpiration(String token, String secret) {
+        return parseToken(token, secret).getExpiration();
     }
 }

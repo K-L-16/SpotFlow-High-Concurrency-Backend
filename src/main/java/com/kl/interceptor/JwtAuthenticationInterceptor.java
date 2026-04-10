@@ -3,6 +3,7 @@ package com.kl.interceptor;
 
 import com.kl.dto.UserDTO;
 import com.kl.entity.User;
+import com.kl.properties.JwtProperties;
 import com.kl.service.IUserService;
 import com.kl.utils.JwtUtils;
 import com.kl.utils.UserHolder;
@@ -26,6 +27,9 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
+    @Autowired
+    private JwtProperties jwtProperties;
+
     //前端请求头还是传递authorization: jwt
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -46,7 +50,7 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
             }
 
             // 2. 解析 JWT
-            Long userId = JwtUtils.getUserId(token);
+            Long userId = JwtUtils.getUserId(token,jwtProperties.getSecret());
 
             // 3. 查用户
             User user = userService.findById(userId);
