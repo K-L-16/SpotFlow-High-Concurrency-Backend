@@ -1,6 +1,7 @@
 package com.kl.service.impl;
 
 
+import com.kl.annotation.LogOperation;
 import com.kl.dto.Result;
 import com.kl.entity.VoucherOrder;
 import com.kl.repository.VoucherOrderRepository;
@@ -50,6 +51,7 @@ public class VoucherOrderServiceImpl  implements IVoucherOrderService {
     }
 
 
+    @LogOperation("seckillVoucher order operation")
     @Override
     public Result seckillVoucher(Long voucherId) {
         //1.执行lua脚本

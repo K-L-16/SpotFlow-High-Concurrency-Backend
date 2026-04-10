@@ -12,8 +12,12 @@ local orderKey = "seckill:order:" .. voucherId
 
 -- 3.脚本逻辑
 --3.1判断库存是否充足(rediscall得到的是string所以要给他转成number)
-if (tonumber(redis.call("get", stockKey)) <= 0) then
-    --库存不足，返回1
+local stock = redis.call("get", stockKey)
+if (not stock) then
+    return 1
+end
+
+if (tonumber(stock) <= 0) then
     return 1
 end
 --3.2 判断用户是否重复抢购,
