@@ -10,8 +10,10 @@ import com.kl.service.IVoucherOrderService;
 import com.kl.utils.MQConstants;
 import com.kl.utils.RedisIDWorker;
 import com.kl.utils.UserHolder;
+import com.kl.utils.VoucherOrderProcessResult;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -79,44 +81,54 @@ public class VoucherOrderServiceImpl  implements IVoucherOrderService {
         //2.6优惠券id
         voucherOrder.setVoucherId(voucherId);
         //放入mq
-        try{
+        try {
+            String messageId = String.valueOf(orderId);
+            CorrelationData correlationData = new CorrelationData(messageId);
+
             rabbitTemplate.convertAndSend(
                     MQConstants.SECKILL_EXCHANGE,
                     MQConstants.SECKILL_ROUTING_KEY,
-                    voucherOrder
+                    voucherOrder,
+                    correlationData
             );
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("发送 RabbitMQ 消息失败，订单ID: {}", orderId, e);
             throw new RuntimeException("发送消息失败");
-        };
+        }
 
         //3.返回订单id
         return Result.ok(orderId);
     }
 
     @Transactional
-    public  void createVoucherOrder(VoucherOrder voucherOrder){
-        //5 一人一单，不能多买
+    public VoucherOrderProcessResult createVoucherOrder(VoucherOrder voucherOrder) {
+        Long orderId = voucherOrder.getId();
         Long userId = voucherOrder.getUserId();
-            //5.1 查询订单
-            int count = voucherOrderRepository.countByUserIdAndVoucherId(
-                    userId,
-                    voucherOrder.getVoucherId()
-            );
-            //5.2判断是否存在
-            if (count > 0){
-                log.error("用户已经购买过一次");
-                return;
-            }
+        Long voucherId = voucherOrder.getVoucherId();
 
-            //6.扣减库存
-        int updated = seckillVoucherService.deductStock(voucherOrder.getVoucherId());
+        // 1. 幂等：同一条消息已经处理过
+        if (voucherOrderRepository.existsById(orderId)) {
+            log.warn("重复消息，订单已存在，orderId={}", orderId);
+            return VoucherOrderProcessResult.DUPLICATE_MESSAGE;
+        }
+
+        // 2. 一人一单
+        int count = voucherOrderRepository.countByUserIdAndVoucherId(userId, voucherId);
+        if (count > 0) {
+            log.warn("用户已经购买过一次，userId={}, voucherId={}", userId, voucherId);
+            return VoucherOrderProcessResult.DUPLICATE_USER_ORDER;
+        }
+
+        // 3. 扣减库存
+        int updated = seckillVoucherService.deductStock(voucherId);
         if (updated == 0) {
-            log.error("库存不足");
-            return;
+            log.warn("库存不足，voucherId={}", voucherId);
+            return VoucherOrderProcessResult.OUT_OF_STOCK;
         }
-            //7.创建订单
+
+        // 4. 保存订单
         voucherOrderRepository.save(voucherOrder);
-        log.info("订单创建成功");
-        }
+        log.info("订单创建成功，orderId={}", orderId);
+        return VoucherOrderProcessResult.SUCCESS;
+    }
 }
